@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuaderno de Derivadas</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
+<style>
+  :root{
+    --paper: #F6F1E4;
+    --paper-line: #D7CDB1;
+    --ink: #1E2A44;
+    --ink-soft: #4A5773;
+    --red: #A93226;
+    --red-soft: #C0554B;
+    --green: #3F6B4E;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    min-height:100vh;
+  }
+  body{
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size: 100% 42px;
+    background-position: 0 140px;
+  }
+  .margin-line{
+    position: fixed;
+    top:0; bottom:0; left: 64px;
+    width: 2px;
+    background: var(--red-soft);
+    opacity: 0.55;
+    z-index: 0;
+  }
+  @media (max-width: 640px){ .margin-line{ left: 28px; } }
+
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 40px 80px 96px;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 640px){ .wrap{ padding: 32px 20px 60px 52px; } }
+
+  header{ margin-bottom: 36px; }
+  .eyebrow{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin: 0 0 6px 0;
+  }
+  h1{
+    font-size: 38px;
+    font-style: italic;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .sub{
+    margin-top: 10px;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    max-width: 46ch;
+  }
+
+  .sheet{
+    background: rgba(255,255,255,0.35);
+    border: 1px solid var(--paper-line);
+    border-radius: 3px;
+    padding: 26px 26px 22px;
+    margin-bottom: 28px;
+  }
+
+  label{
+    display:block;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .row{
+    display:flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .field{ flex: 1 1 220px; }
+
+  input[type="text"]{
+    width:100%;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 20px;
+    padding: 10px 4px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+  }
+  input[type="text"]:focus{ border-bottom-color: var(--red); }
+  input[type="text"]::placeholder{ color: #9a917a; font-style: italic; }
+
+  select{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 15px;
+    padding: 8px 6px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .actions{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  button{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    padding: 11px 22px;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    background: transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  button:hover{ background: var(--red); color: #fff; }
+  .hint{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .palette{
+    margin: 4px 0 20px 0;
+  }
+  .palette-group{
+    margin-bottom: 12px;
+  }
+  .palette-label{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 7px;
+  }
+  .palette-buttons{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .sym-btn{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 13.5px;
+    padding: 6px 11px;
+    border: 1px solid var(--paper-line);
+    background: rgba(255,255,255,0.5);
+    color: var(--ink);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .sym-btn:hover{
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .result{
+    margin-top: 6px;
+    min-height: 20px;
+  }
+  .result .line{
+    display:flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--paper-line);
+    flex-wrap: wrap;
+  }
+  .result .line:last-child{ border-bottom: none; }
+  .tag{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    min-width: 78px;
+  }
+  .katex-wrap.orig{ color: var(--ink); font-size: 1.15em; }
+  .katex-wrap.deriv{ color: var(--red); font-size: 1.2em; }
+
+  .error{
+    color: var(--red);
+    font-family: Menlo, Consolas, monospace;
+    font-size: 14px;
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  .steps-toggle{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .steps-toggle button{
+    border-color: var(--ink-soft);
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    padding: 8px 16px;
+  }
+  .steps-toggle button:hover{ background: var(--ink-soft); color:#fff; }
+  .steps-toggle .count{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .steps-panel{
+    margin-top: 18px;
+    display:none;
+  }
+  .steps-panel.open{ display:block; }
+  .steps-panel .steps-note{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin: 0 0 16px 0;
+  }
+
+  .step{
+    position: relative;
+    padding: 12px 0 12px 18px;
+    border-left: 2px solid var(--paper-line);
+    margin-bottom: 4px;
+  }
+  .step[data-depth="1"]{ margin-left: 22px; }
+  .step[data-depth="2"]{ margin-left: 44px; }
+  .step[data-depth="3"]{ margin-left: 66px; }
+  .step[data-depth="4"]{ margin-left: 88px; border-left-color: var(--red-soft); }
+  .step::before{
+    content: attr(data-num);
+    position: absolute;
+    left: -9px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 9.5px;
+    color: #fff;
+    background: var(--ink-soft);
+    border-radius: 50%;
+  }
+  .step[data-depth="0"]::before{ background: var(--red); }
+  .step-title{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+  .step[data-depth="0"] .step-title{ color: var(--red); }
+  .step:not([data-depth="0"]) .step-title{ color: var(--ink-soft); }
+  .step-explain{
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .step-tex{
+    font-size: 1.05em;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .step-tex + .step-tex{ margin-top: 6px; }
+  .step-final{
+    margin-top: 4px;
+    padding-top: 14px;
+    border-top: 2px solid var(--ink);
+  }
+  .step-final .step-title{ color: var(--green); }
+  .chain-line{
+    display:flex;
+    align-items:baseline;
+    gap: 14px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--paper-line);
+  }
+  .chain-line:last-child{ border-bottom:none; }
+  .chain-tag{
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    min-width: 60px;
+  }
+
+  .history h2{
+    font-size: 13px;
+    font-family: Menlo, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin: 0;
+  }
+  .history-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .clear-hist{
+    font-size: 11px;
+    padding: 6px 12px;
+    border-color: var(--paper-line);
+    color: var(--ink-soft);
+  }
+  .clear-hist:hover{ background: var(--red); border-color: var(--red); color:#fff; }
+  .hist-item{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--paper-line);
+    cursor: pointer;
+    flex-wrap: wrap;
+  }
+  .hist-item:hover .hist-expr{ color: var(--red); }
+  .hist-expr{ font-family: Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); transition: color 0.15s ease;}
+  .hist-order{ font-size: 12px; color: var(--ink-soft); font-family: Menlo, Consolas, monospace; }
+  .empty{ color: var(--ink-soft); font-style: italic; font-size: 14px; }
+
+  footer{
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-family: Menlo, Consolas, monospace;
+  }
+</style>
+</head>
+<body>
+<div class="margin-line"></div>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">cuaderno de cálculo</p>
+    <h1>Derivadas</h1>
+    <p class="sub">Escribe cualquier función, obtén su derivada de primer a cuarto orden y el procedimiento regla por regla si quieres verlo.</p>
+  </header>
+
+  <section class="sheet">
+    <div class="row">
+      <div class="field" style="flex: 2 1 300px;">
+        <label for="expr">f(x) =</label>
+        <input type="text" id="expr" placeholder="ej: x^3 * sin(x) + ln(x)" autocomplete="off" spellcheck="false">
+        <p class="hint" style="margin-top:6px;">ln = logaritmo natural &nbsp;·&nbsp; log = logaritmo base 10</p>
+      </div>
+      <div class="field" style="flex: 0 1 130px;">
+        <label for="variable">Variable</label>
+        <select id="variable">
+          <option value="x">x</option>
+          <option value="t">t</option>
+          <option value="theta">θ</option>
+          <option value="y">y</option>
+        </select>
+      </div>
+      <div class="field" style="flex: 0 1 150px;">
+        <label for="order">Orden</label>
+        <select id="order">
+          <option value="1">1ª derivada</option>
+          <option value="2">2ª derivada</option>
+          <option value="3">3ª derivada</option>
+          <option value="4">4ª derivada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="palette" id="palette"></div>
+
+    <div class="actions">
+      <button id="calc-btn">Derivar</button>
+      <span class="hint">Enter también funciona</span>
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="error" id="error" style="display:none;"></div>
+
+    <div class="steps-toggle" id="steps-toggle" style="display:none;">
+      <button id="steps-btn" type="button">Ver el paso a paso</button>
+      <span class="count" id="steps-count"></span>
+    </div>
+    <div class="steps-panel" id="steps-panel"></div>
+  </section>
+
+  <section class="history">
+    <div class="history-head">
+      <h2>Historial</h2>
+      <button id="clear-hist-btn" type="button" class="clear-hist">Borrar historial</button>
+    </div>
+    <div id="hist-list"><p class="empty">Todavía no has calculado nada.</p></div>
+  </section>
+
+  <footer>Hecho por: Santiago Quintero Rosas</footer>
+</div>
+
+<script>
+const exprInput = document.getElementById('expr');
+const varSelect = document.getElementById('variable');
+const orderSelect = document.getElementById('order');
+const btn = document.getElementById('calc-btn');
+const resultEl = document.getElementById('result');
+const errorEl = document.getElementById('error');
+const histList = document.getElementById('hist-list');
+
+let history = [];
+
+const paletteGroups = [
+  {
+    label: 'Funciones',
+    items: [
+      { label: 'sin', insert: 'sin(', },
+      { label: 'cos', insert: 'cos(' },
+      { label: 'tan', insert: 'tan(' },
+      { label: 'asin', insert: 'asin(' },
+      { label: 'acos', insert: 'acos(' },
+      { label: 'atan', insert: 'atan(' },
+      { label: 'sinh', insert: 'sinh(' },
+      { label: 'cosh', insert: 'cosh(' },
+      { label: 'ln', insert: 'ln(' },
+      { label: 'log₁₀', insert: 'log10(' },
+      { label: '√', insert: 'sqrt(' },
+      { label: '|x|', insert: 'abs(' },
+    ]
+  },
+  {
+    label: 'Potencias y constantes',
+    items: [
+      { label: 'x²', insert: 'x^2' },
+      { label: 'x³', insert: 'x^3' },
+      { label: 'xⁿ', insert: 'x^' },
+      { label: 'eˣ', insert: 'e^x' },
+      { label: 'e', insert: 'e' },
+      { label: 'π', insert: 'pi' },
+      { label: '1/x', insert: '1/x' },
+    ]
+  },
+  {
+    label: 'Operadores',
+    items: [
+      { label: '( )', insert: '()', cursorOffset: -1 },
+      { label: '^', insert: '^' },
+      { label: '×', insert: '*' },
+      { label: '÷', insert: '/' },
+      { label: '+', insert: '+' },
+      { label: '−', insert: '-' },
+    ]
+  }
+];
+
+function insertAtCursor(text, cursorOffset){
+  const start = exprInput.selectionStart ?? exprInput.value.length;
+  const end = exprInput.selectionEnd ?? exprInput.value.length;
+  const current = exprInput.value;
+  exprInput.value = current.slice(0, start) + text + current.slice(end);
+  const newPos = start + text.length + (cursorOffset || 0);
+  exprInput.focus();
+  exprInput.setSelectionRange(newPos, newPos);
+}
+
+function buildPalette(){
+  const paletteEl = document.getElementById('palette');
+  paletteEl.innerHTML = '';
+  paletteGroups.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'palette-group';
+    const labelEl = document.createElement('div');
+    labelEl.className = 'palette-label';
+    labelEl.textContent = group.label;
+    const buttonsEl = document.createElement('div');
+    buttonsEl.className = 'palette-buttons';
+    group.items.forEach(item => {
+      const btnEl = document.createElement('button');
+      btnEl.type = 'button';
+      btnEl.className = 'sym-btn';
+      btnEl.textContent = item.label;
+      btnEl.addEventListener('click', () => insertAtCursor(item.insert, item.cursorOffset));
+      buttonsEl.appendChild(btnEl);
+    });
+    groupEl.appendChild(labelEl);
+    groupEl.appendChild(buttonsEl);
+    paletteEl.appendChild(groupEl);
+  });
+}
+buildPalette();
+
+function renderTex(container, texStr){
+  container.innerHTML = '';
+  try{
+    katex.render(texStr, container, { throwOnError: false });
+  }catch(e){
+    container.textContent = texStr;
+  }
+}
+
+// math.js por defecto: "ln" no existe, y "log" de un solo argumento significa
+// logaritmo NATURAL (no base 10). Para que se comporte como se espera en un
+// curso normal de cálculo (ln = natural, log = base 10), se reescribe el árbol
+// de la expresión antes de derivar: "ln(u)" -> log natural de u; "log(u)" o
+// "log10(u)" -> log(u)/log(10) (cambio de base), y "log(u, b)" -> log(u)/log(b).
+// Al quedar expresado con operaciones y log() nativos, la regla de la cadena
+// y la regla del cociente de math.js aplican de forma automática y correcta.
+function toComputeNode(node){
+  return node.transform(function(n){
+    if(n.type === 'FunctionNode'){
+      if(n.name === 'ln' && n.args.length === 1){
+        return new math.FunctionNode('log', n.args);
+      }
+      if((n.name === 'log10' || n.name === 'log') && n.args.length === 1){
+        return buildLogBase(n.args[0], new math.ConstantNode(10));
+      }
+      if(n.name === 'log2' && n.args.length === 1){
+        return buildLogBase(n.args[0], new math.ConstantNode(2));
+      }
+      if(n.name === 'log' && n.args.length === 2){
+        return buildLogBase(n.args[0], n.args[1]);
+      }
+    }
+    return n;
+  });
+}
+
+function buildLogBase(argNode, baseNode){
+  const numerator = new math.FunctionNode('log', [argNode]);
+  const denominator = new math.FunctionNode('log', [baseNode]);
+  const divNode = new math.OperatorNode('/', 'divide', [numerator, denominator]);
+  divNode.isLogBaseDisplay = true;
+  divNode.logBaseArg = argNode;
+  divNode.logBaseValue = baseNode;
+  return divNode;
+}
+
+// Handler de KaTeX: cualquier log(u) de un solo argumento que quede en el
+// árbol es, por construcción, logaritmo natural -> se muestra como \ln.
+// Los nodos marcados como cambio de base se muestran como log en subíndice.
+function texHandler(node, options){
+  if(node.type === 'FunctionNode' && node.name === 'log' && node.args.length === 1){
+    return '\\ln\\left(' + node.args[0].toTex(options) + '\\right)';
+  }
+  if(node.isLogBaseDisplay){
+    return '\\log_{' + node.logBaseValue.toTex(options) + '}\\left(' + node.logBaseArg.toTex(options) + '\\right)';
+  }
+  return undefined;
+}
+const TEX_OPTIONS = { handler: texHandler };
+
+function computeDerivative(exprStr, variable, order){
+  const parsed = math.parse(exprStr);
+  const computeNode = toComputeNode(parsed);
+  let currentNode = computeNode;
+  const chain = [math.simplify(computeNode)];
+  for(let i=0; i<order; i++){
+    currentNode = math.derivative(currentNode, variable);
+    chain.push(math.simplify(currentNode));
+  }
+  const simplified = chain[chain.length - 1];
+  return { original: computeNode, derivative: simplified, chain, parsedOriginal: parsed };
+}
+
+// ---------------------------------------------------------------------
+// Motor de "paso a paso". No reimplementa las reglas de derivación desde
+// cero: identifica qué regla aplica mirando la forma del árbol (suma,
+// producto, cociente, potencia, función con regla de la cadena...) y para
+// cada sub-expresión que necesita mostrarse ya derivada llama al mismo
+// math.derivative + math.simplify que usa el resultado principal, así que
+// nunca puede "explicar" un resultado distinto del que se muestra arriba.
+// ---------------------------------------------------------------------
+
+const MAX_STEPS = 60;
+
+function unwrapParens(node){
+  while(node.type === 'ParenthesisNode') node = node.content;
+  return node;
+}
+
+function containsVariable(node, variable){
+  node = unwrapParens(node);
+  if(node.type === 'SymbolNode') return node.name === variable;
+  if(node.type === 'ConstantNode') return false;
+  if(node.args) return node.args.some(a => containsVariable(a, variable));
+  return false;
+}
+
+function displayTex(node){
+  try{ return unwrapParens(node).toTex({ handler: displayTexHandler }); }
+  catch(e){ return unwrapParens(node).toString(); }
+}
+
+function displayTexHandler(node, options){
+  if(node.type === 'FunctionNode'){
+    if(node.name === 'ln') return '\\ln\\left(' + node.args[0].toTex(options) + '\\right)';
+    if(node.name === 'log10') return '\\log_{10}\\left(' + node.args[0].toTex(options) + '\\right)';
+    if(node.name === 'log2') return '\\log_{2}\\left(' + node.args[0].toTex(options) + '\\right)';
+    if(node.name === 'log' && node.args.length === 1) return '\\log_{10}\\left(' + node.args[0].toTex(options) + '\\right)';
+    if(node.name === 'log' && node.args.length === 2) return '\\log_{' + node.args[1].toTex(options) + '}\\left(' + node.args[0].toTex(options) + '\\right)';
+  }
+  return undefined;
+}
+
+// Deriva y simplifica una sub-expresión reutilizando exactamente el mismo
+// camino (toComputeNode + math.derivative + math.simplify) que el resultado
+// principal, para que cada pieza mostrada en los pasos sea consistente.
+function derivTex(node, variable){
+  try{
+    const d = math.simplify(math.derivative(toComputeNode(node), variable));
+    return d.toTex(TEX_OPTIONS);
+  }catch(e){
+    return '\\text{(no disponible)}';
+  }
+}
+
+const FN_RULES = {
+  sin:   u => `\\cos\\left(${u}\\right)`,
+  cos:   u => `-\\sin\\left(${u}\\right)`,
+  tan:   u => `\\sec^2\\left(${u}\\right)`,
+  asin:  u => `\\dfrac{1}{\\sqrt{1-${u}^2}}`,
+  acos:  u => `-\\dfrac{1}{\\sqrt{1-${u}^2}}`,
+  atan:  u => `\\dfrac{1}{1+${u}^2}`,
+  sinh:  u => `\\cosh\\left(${u}\\right)`,
+  cosh:  u => `\\sinh\\left(${u}\\right)`,
+  tanh:  u => `\\operatorname{sech}^2\\left(${u}\\right)`,
+  exp:   u => `e^{${u}}`,
+  sqrt:  u => `\\dfrac{1}{2\\sqrt{${u}}}`,
+  abs:   u => `\\dfrac{${u}}{\\left|${u}\\right|}`,
+  ln:    u => `\\dfrac{1}{${u}}`,
+  log10: u => `\\dfrac{1}{${u}\\,\\ln(10)}`,
+  log2:  u => `\\dfrac{1}{${u}\\,\\ln(2)}`,
+};
+const FN_LABELS = {
+  sin:'seno', cos:'coseno', tan:'tangente', asin:'arcoseno', acos:'arcocoseno',
+  atan:'arcotangente', sinh:'seno hiperbólico', cosh:'coseno hiperbólico',
+  tanh:'tangente hiperbólica', exp:'función exponencial', sqrt:'raíz cuadrada',
+  abs:'valor absoluto', ln:'logaritmo natural', log10:'logaritmo base 10', log2:'logaritmo base 2'
+};
+
+function ddx(variable, innerTex){ return `\\dfrac{d}{d${variable}}\\left[${innerTex}\\right]`; }
+
+function generateSteps(rawNode, variable, steps, depth){
+  if(steps.length > MAX_STEPS) return;
+  const node = unwrapParens(rawNode);
+
+  if(!containsVariable(node, variable)){
+    steps.push({ depth, kind:'constant', exprTex: displayTex(node) });
+    return;
+  }
+
+  if(node.type === 'SymbolNode' && node.name === variable){
+    steps.push({ depth, kind:'variable', exprTex: displayTex(node) });
+    return;
+  }
+
+  if(node.type === 'OperatorNode'){
+    if(node.fn === 'add' || node.fn === 'subtract'){
+      let args = node.args;
+      if(args.length > 2){
+        const g = args[args.length-1];
+        const f = new math.OperatorNode(node.op, node.fn, args.slice(0,-1));
+        args = [f, g];
+      }
+      const [f, g] = args;
+      steps.push({ depth, kind: node.fn === 'add' ? 'sum' : 'difference',
+        exprTex: displayTex(node), fTex: displayTex(f), gTex: displayTex(g) });
+      generateSteps(f, variable, steps, depth+1);
+      generateSteps(g, variable, steps, depth+1);
+      return;
+    }
+    if(node.fn === 'unaryMinus'){
+      steps.push({ depth, kind:'unaryMinus', exprTex: displayTex(node), fTex: displayTex(node.args[0]) });
+      generateSteps(node.args[0], variable, steps, depth+1);
+      return;
+    }
+    if(node.fn === 'unaryPlus'){
+      generateSteps(node.args[0], variable, steps, depth);
+      return;
+    }
+    if(node.fn === 'multiply'){
+      let args = node.args;
+      if(args.length > 2){
+        const g = args[args.length-1];
+        const f = new math.OperatorNode(node.op, node.fn, args.slice(0,-1));
+        args = [f, g];
+      }
+      let [f, g] = args;
+      const fHasVar = containsVariable(f, variable);
+      const gHasVar = containsVariable(g, variable);
+      if(!fHasVar || !gHasVar){
+        const constPart = fHasVar ? g : f;
+        const varPart = fHasVar ? f : g;
+        steps.push({ depth, kind:'constMultiple', exprTex: displayTex(node),
+          constTex: displayTex(constPart), varTex: displayTex(varPart) });
+        generateSteps(varPart, variable, steps, depth+1);
+      } else {
+        steps.push({ depth, kind:'product', exprTex: displayTex(node),
+          fTex: displayTex(f), gTex: displayTex(g),
+          fPrimeTex: derivTex(f, variable), gPrimeTex: derivTex(g, variable) });
+        generateSteps(f, variable, steps, depth+1);
+        generateSteps(g, variable, steps, depth+1);
+      }
+      return;
+    }
+    if(node.fn === 'divide'){
+      const [f, g] = node.args;
+      const gHasVar = containsVariable(g, variable);
+      if(!gHasVar){
+        steps.push({ depth, kind:'constDivide', exprTex: displayTex(node),
+          constTex: displayTex(g), varTex: displayTex(f) });
+        generateSteps(f, variable, steps, depth+1);
+      } else {
+        steps.push({ depth, kind:'quotient', exprTex: displayTex(node),
+          fTex: displayTex(f), gTex: displayTex(g),
+          fPrimeTex: derivTex(f, variable), gPrimeTex: derivTex(g, variable) });
+        generateSteps(f, variable, steps, depth+1);
+        generateSteps(g, variable, steps, depth+1);
+      }
+      return;
+    }
+    if(node.fn === 'pow'){
+      const base = unwrapParens(node.args[0]);
+      const exp = unwrapParens(node.args[1]);
+      const baseHasVar = containsVariable(base, variable);
+      const expHasVar = containsVariable(exp, variable);
+      if(baseHasVar && !expHasVar){
+        const isBareVar = (base.type === 'SymbolNode' && base.name === variable);
+        steps.push({ depth, kind: isBareVar ? 'powerRuleSimple' : 'powerRuleChain',
+          exprTex: displayTex(node), nTex: displayTex(exp), uTex: displayTex(base) });
+        if(!isBareVar) generateSteps(base, variable, steps, depth+1);
+      } else if(!baseHasVar && expHasVar){
+        steps.push({ depth, kind:'exponentialRule', exprTex: displayTex(node),
+          aTex: displayTex(base), uTex: displayTex(exp) });
+        generateSteps(exp, variable, steps, depth+1);
+      } else {
+        steps.push({ depth, kind:'generalPower', exprTex: displayTex(node) });
+      }
+      return;
+    }
+    steps.push({ depth, kind:'genericOperator', exprTex: displayTex(node) });
+    return;
+  }
+
+  if(node.type === 'FunctionNode'){
+    const name = node.name;
+    const argRaw = node.args[0];
+    const arg = unwrapParens(argRaw);
+    const isBareVar = (arg.type === 'SymbolNode' && arg.name === variable);
+    const uTex = displayTex(arg);
+    let formulaTex = null;
+    if(name === 'log' && node.args.length === 1) formulaTex = FN_RULES.log10(uTex);
+    else if(name === 'log' && node.args.length === 2) formulaTex = `\\dfrac{1}{${uTex}\\,\\ln(${displayTex(node.args[1])})}`;
+    else if(FN_RULES[name]) formulaTex = FN_RULES[name](uTex);
+
+    steps.push({
+      depth, kind:'function', fnName: name, fnLabel: FN_LABELS[name] || name,
+      exprTex: displayTex(node), uTex, isBareVar, formulaTex
+    });
+    if(!isBareVar) generateSteps(argRaw, variable, steps, depth+1);
+    return;
+  }
+
+  steps.push({ depth, kind:'unknown', exprTex: displayTex(node) });
+}
+
+function texSpan(tex, cls){
+  const span = document.createElement('span');
+  span.className = 'step-tex' + (cls ? ' ' + cls : '');
+  try{ katex.render(tex, span, { throwOnError:false, displayMode:false }); }
+  catch(e){ span.textContent = tex; }
+  return span;
+}
+
+function buildStepEl(step, index, variable){
+  const el = document.createElement('div');
+  el.className = 'step';
+  el.dataset.depth = Math.min(step.depth, 4);
+  el.dataset.num = index + 1;
+
+  const title = document.createElement('div');
+  title.className = 'step-title';
+  const explain = document.createElement('div');
+  explain.className = 'step-explain';
+
+  const lines = [];
+
+  switch(step.kind){
+    case 'constant':
+      title.textContent = 'Término constante';
+      explain.textContent = 'No depende de la variable, así que su derivada es 0.';
+      lines.push(`${ddx(variable, step.exprTex)} = 0`);
+      break;
+    case 'variable':
+      title.textContent = 'Derivada de la variable';
+      explain.textContent = 'La derivada de la variable respecto de sí misma es 1.';
+      lines.push(`${ddx(variable, step.exprTex)} = 1`);
+      break;
+    case 'sum':
+    case 'difference': {
+      const sign = step.kind === 'sum' ? '+' : '-';
+      title.textContent = 'Regla de la suma';
+      explain.textContent = `La derivada de una suma (o resta) de términos es la suma (o resta) de sus derivadas.`;
+      lines.push(`\\big(f ${sign} g\\big)' = f' ${sign} g'`);
+      lines.push(`\\text{con } f = ${step.fTex}, \\;\\; g = ${step.gTex}`);
+      break;
+    }
+    case 'unaryMinus':
+      title.textContent = 'Múltiplo constante (signo)';
+      explain.textContent = 'El signo negativo sale de la derivada sin alterar el resto del cálculo.';
+      lines.push(`\\big(-f\\big)' = -f'`);
+      lines.push(`\\text{con } f = ${step.fTex}`);
+      break;
+    case 'constMultiple':
+      title.textContent = 'Regla del múltiplo constante';
+      explain.textContent = 'Una constante que multiplica a toda la expresión sale de la derivada.';
+      lines.push(`\\big(k\\cdot f\\big)' = k\\cdot f'`);
+      lines.push(`\\text{con } k = ${step.constTex}, \\;\\; f = ${step.varTex}`);
+      break;
+    case 'constDivide':
+      title.textContent = 'Múltiplo constante (división)';
+      explain.textContent = 'Dividir entre una constante equivale a multiplicar por su recíproco, así que la constante sale de la derivada.';
+      lines.push(`\\left(\\dfrac{f}{k}\\right)' = \\dfrac{f'}{k}`);
+      lines.push(`\\text{con } f = ${step.varTex}, \\;\\; k = ${step.constTex}`);
+      break;
+    case 'product':
+      title.textContent = 'Regla del producto';
+      explain.textContent = 'Cuando dos partes que dependen de x se multiplican, se usa: (derivada de la primera × segunda) + (primera × derivada de la segunda).';
+      lines.push(`\\big(f\\cdot g\\big)' = f'\\cdot g + f\\cdot g'`);
+      lines.push(`\\text{con } f = ${step.fTex}, \\;\\; g = ${step.gTex}`);
+      lines.push(`f' = ${step.fPrimeTex}, \\;\\; g' = ${step.gPrimeTex}`);
+      break;
+    case 'quotient':
+      title.textContent = 'Regla del cociente';
+      explain.textContent = 'Para un cociente de dos partes que dependen de x se aplica la regla del cociente.';
+      lines.push(`\\left(\\dfrac{f}{g}\\right)' = \\dfrac{f'\\cdot g - f\\cdot g'}{g^2}`);
+      lines.push(`\\text{con } f = ${step.fTex}, \\;\\; g = ${step.gTex}`);
+      lines.push(`f' = ${step.fPrimeTex}, \\;\\; g' = ${step.gPrimeTex}`);
+      break;
+    case 'powerRuleSimple':
+      title.textContent = 'Regla de la potencia';
+      explain.textContent = 'Para xⁿ, el exponente baja multiplicando y se resta 1 al exponente.';
+      lines.push(`\\big(${variable}^{n}\\big)' = n\\cdot ${variable}^{\\,n-1}`);
+      lines.push(`\\text{con } n = ${step.nTex}`);
+      break;
+    case 'powerRuleChain':
+      title.textContent = 'Regla de la potencia + regla de la cadena';
+      explain.textContent = 'La base es a su vez una expresión en x, así que tras aplicar la regla de la potencia hay que multiplicar por la derivada de esa base.';
+      lines.push(`\\big(u^{n}\\big)' = n\\cdot u^{\\,n-1}\\cdot u'`);
+      lines.push(`\\text{con } u = ${step.uTex}, \\;\\; n = ${step.nTex}`);
+      break;
+    case 'exponentialRule':
+      title.textContent = 'Regla de derivación exponencial';
+      explain.textContent = 'Una constante elevada a una expresión en x se deriva multiplicando por el logaritmo natural de la base y por la derivada del exponente.';
+      lines.push(`\\big(a^{u}\\big)' = a^{u}\\cdot\\ln(a)\\cdot u'`);
+      lines.push(`\\text{con } a = ${step.aTex}, \\;\\; u = ${step.uTex}`);
+      break;
+    case 'generalPower':
+      title.textContent = 'Caso general (base y exponente variables)';
+      explain.textContent = 'Tanto la base como el exponente dependen de x. Este caso se resuelve con derivación logarítmica; se muestra directamente el resultado ya simplificado más abajo.';
+      break;
+    case 'function': {
+      const label = step.fnLabel.charAt(0).toUpperCase() + step.fnLabel.slice(1);
+      title.textContent = step.isBareVar ? `Derivada de la función ${step.fnLabel}` : `Derivada de ${step.fnLabel} (regla de la cadena)`;
+      if(step.formulaTex){
+        if(step.isBareVar){
+          explain.textContent = `${label}: se aplica la fórmula de derivación directamente sobre x.`;
+          lines.push(`${ddx(variable, step.exprTex)} = ${step.formulaTex}`);
+        } else {
+          explain.textContent = `${label} de una expresión interna u: se deriva la función y se multiplica por u' (regla de la cadena).`;
+          lines.push(`\\big[${step.exprTex}\\big]' = ${step.formulaTex}\\cdot u'`);
+          lines.push(`\\text{con } u = ${step.uTex}`);
+        }
+      } else {
+        explain.textContent = `Se aplica la fórmula de derivación estándar de esta función.`;
+        lines.push(`${ddx(variable, step.exprTex)}`);
+      }
+      break;
+    }
+    case 'genericOperator':
+    case 'unknown':
+    default:
+      title.textContent = 'Regla de derivación estándar';
+      explain.textContent = 'Se aplica la fórmula de derivación correspondiente a esta expresión.';
+      lines.push(`${ddx(variable, step.exprTex)}`);
+      break;
+  }
+
+  el.appendChild(title);
+  el.appendChild(explain);
+  lines.forEach(tex => el.appendChild(texSpan(tex)));
+  return el;
+}
+
+function renderSteps(panelEl, steps, finalTex, order, variable){
+  panelEl.innerHTML = '';
+  if(order !== 1){
+    const note = document.createElement('p');
+    note.className = 'steps-note';
+    note.textContent = 'El desglose regla por regla está disponible para la 1ª derivada. Para órdenes superiores, aquí tienes cada derivada sucesiva ya simplificada:';
+    panelEl.appendChild(note);
+    return;
+  }
+  if(steps.length === 0){
+    const note = document.createElement('p');
+    note.className = 'steps-note';
+    note.textContent = 'No se pudo generar un desglose para esta expresión, pero el resultado de arriba es correcto.';
+    panelEl.appendChild(note);
+    return;
+  }
+  steps.forEach((step, i) => panelEl.appendChild(buildStepEl(step, i, variable)));
+
+  const finalEl = document.createElement('div');
+  finalEl.className = 'step step-final';
+  finalEl.dataset.depth = 0;
+  finalEl.dataset.num = '✓';
+  const finalTitle = document.createElement('div');
+  finalTitle.className = 'step-title';
+  finalTitle.textContent = 'Resultado simplificado';
+  finalEl.appendChild(finalTitle);
+  finalEl.appendChild(texSpan(`\\dfrac{df}{d${variable}} = ${finalTex}`));
+  panelEl.appendChild(finalEl);
+}
+
+function runCalculation(){
+  const exprStr = exprInput.value.trim();
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+  const stepsToggle = document.getElementById('steps-toggle');
+  const stepsPanel = document.getElementById('steps-panel');
+  const stepsBtn = document.getElementById('steps-btn');
+  const stepsCount = document.getElementById('steps-count');
+
+  if(!exprStr){
+    resultEl.innerHTML = '';
+    stepsToggle.style.display = 'none';
+    stepsPanel.classList.remove('open');
+    stepsPanel.innerHTML = '';
+    return;
+  }
+
+  const variable = varSelect.value;
+  const order = parseInt(orderSelect.value, 10);
+
+  try{
+    const { original, derivative, chain, parsedOriginal } = computeDerivative(exprStr, variable, order);
+
+    resultEl.innerHTML = `
+      <div class="line">
+        <span class="tag">f(${variable})</span>
+        <span class="katex-wrap orig" id="tex-orig"></span>
+      </div>
+      <div class="line">
+        <span class="tag">${order > 1 ? `d${order}f/d${variable}${order}` : `d f/d ${variable}`}</span>
+        <span class="katex-wrap deriv" id="tex-deriv"></span>
+      </div>
+    `;
+    renderTex(document.getElementById('tex-orig'), original.toTex(TEX_OPTIONS));
+    renderTex(document.getElementById('tex-deriv'), derivative.toTex(TEX_OPTIONS));
+
+    history.unshift({ expr: exprStr, variable, order, tex: derivative.toTex(TEX_OPTIONS) });
+    if(history.length > 12) history.pop();
+    renderHistory();
+
+    // --- paso a paso ---
+    let steps = [];
+    if(order === 1){
+      try{ generateSteps(parsedOriginal, variable, steps, 0); }
+      catch(e){ steps = []; }
+    }
+    stepsPanel.dataset.rendered = 'false';
+    stepsPanel.classList.remove('open');
+    stepsToggle.style.display = 'flex';
+    stepsBtn.textContent = 'Ver el paso a paso';
+    if(order === 1){
+      stepsCount.textContent = steps.length ? `${steps.length} paso${steps.length===1?'':'s'}` : '';
+    } else {
+      stepsCount.textContent = `${order} derivadas sucesivas`;
+    }
+
+    stepsBtn.onclick = () => {
+      const isOpen = stepsPanel.classList.toggle('open');
+      stepsBtn.textContent = isOpen ? 'Ocultar el paso a paso' : 'Ver el paso a paso';
+      if(isOpen && stepsPanel.dataset.rendered !== 'true'){
+        renderSteps(stepsPanel, steps, derivative.toTex(TEX_OPTIONS), order, variable);
+        if(order !== 1){
+          chain.slice(1).forEach((node, i) => {
+            const ord = i + 1;
+            const line = document.createElement('div');
+            line.className = 'chain-line';
+            const tag = document.createElement('span');
+            tag.className = 'chain-tag';
+            tag.textContent = ord <= 3 ? `f${'′'.repeat(ord)}` : `f⁽${ord}⁾`;
+            line.appendChild(tag);
+            line.appendChild(texSpan(node.toTex(TEX_OPTIONS)));
+            stepsPanel.appendChild(line);
+          });
+        }
+        stepsPanel.dataset.rendered = 'true';
+      }
+    };
+
+  }catch(e){
+    resultEl.innerHTML = '';
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'No entendí esa expresión. Revisa la sintaxis (usa ^ para potencias, * para multiplicar, funciones como sin, cos, ln, exp, sqrt).';
+    stepsToggle.style.display = 'none';
+    stepsPanel.classList.remove('open');
+    stepsPanel.innerHTML = '';
+  }
+}
+
+function renderHistory(){
+  if(history.length === 0){
+    histList.innerHTML = '<p class="empty">Todavía no has calculado nada.</p>';
+    return;
+  }
+  histList.innerHTML = '';
+  history.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'hist-item';
+    div.innerHTML = `
+      <span class="hist-expr">${item.expr}</span>
+      <span class="hist-order">d${item.order > 1 ? item.order : ''}/d${item.variable}${item.order > 1 ? item.order : ''}</span>
+    `;
+    div.addEventListener('click', () => {
+      exprInput.value = item.expr;
+      varSelect.value = item.variable;
+      orderSelect.value = String(item.order);
+      runCalculation();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    histList.appendChild(div);
+  });
+}
+
+btn.addEventListener('click', runCalculation);
+exprInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') runCalculation();
+});
+
+document.getElementById('clear-hist-btn').addEventListener('click', () => {
+  history = [];
+  renderHistory();
+});
+</script>
+</body>
+</html>
